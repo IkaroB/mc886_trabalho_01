@@ -16,12 +16,16 @@ def expand_vert(problem, curr_vert):
 	visible = []
 
 	for polygon in problem["polygons"]:
+
+		# Caso em que o polígono contém curr_vert.
 		if (curr_vert.belongs_poly == polygon):
 			visible_in_poly = get_visible_in_poly(curr_vert)
 			for vis_vert in visible_in_poly:
 				if (vis_vert not in problem["explored"]):
 					visible.append(vis_vert)
 					problem["explored"].append(vis_vert)
+		
+		# Outros polígonos.
 		else:
 			for poly_vert in polygon.vertices:
 				possible_line = classes.LineSeg(curr_vert, poly_vert)
@@ -29,6 +33,14 @@ def expand_vert(problem, curr_vert):
 					if (poly_vert not in problem["explored"]):
 						visible.append(poly_vert)
 						problem["explored"].append(poly_vert)
+
+	# Caso em que o destino é visível
+	goal = problem["start_end_vertices"][1]
+	possible_line = classes.LineSeg(curr_vert, poly_vert)
+		if (is_visible(possible_line, problem)):
+			if (poly_vert not in problem["explored"]):
+				visible.append(poly_vert)
+				problem["explored"].append(poly_vert)
 
 	curr_vert.visible = visible
 
