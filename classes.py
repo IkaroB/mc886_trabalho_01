@@ -14,6 +14,7 @@ class Vertex:
 		self.coord = Point(x, y)
 		self.visible = []
 		self.belongs_poly = None
+		self.adjacent = []
 
 	def print(self):
 		print(f"{self.name}: x={self.coord.x}, y={self.coord.y};")
@@ -43,8 +44,8 @@ class Polygon:
 
 class Point:
 	def __init__(self, x, y):
-		self.x = x
-		self.y = y
+		self.x = float(x)
+		self.y = float(y)
 
 	def print(self):
 		print(f"x={self.x}, y={self.y};")

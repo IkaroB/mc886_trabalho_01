@@ -17,7 +17,7 @@ def expand_vert(problem, curr_vert):
 
 	for polygon in problem["polygons"]:
 
-		# Caso em que o polígono contém curr_vert.
+		# Checa o caso em que o polígono contém curr_vert.
 		if (curr_vert.belongs_poly == polygon):
 			visible_in_poly = get_visible_in_poly(curr_vert)
 			for vis_vert in visible_in_poly:
@@ -34,13 +34,13 @@ def expand_vert(problem, curr_vert):
 						visible.append(poly_vert)
 						problem["explored"].append(poly_vert)
 
-	# Caso em que o destino é visível
+	# Checa o caso em que o destino é visível
 	goal = problem["start_end_vertices"][1]
 	possible_line = classes.LineSeg(curr_vert, poly_vert)
-		if (is_visible(possible_line, problem)):
-			if (poly_vert not in problem["explored"]):
-				visible.append(poly_vert)
-				problem["explored"].append(poly_vert)
+	if (is_visible(possible_line, problem)):
+		if (poly_vert not in problem["explored"]):
+			visible.append(poly_vert)
+			problem["explored"].append(poly_vert)
 
 	curr_vert.visible = visible
 
@@ -145,18 +145,21 @@ def get_visible_in_poly(vert):
 
 def get_adjacent(vert):
 
-	polygon = vert.belongs_poly
-	no_vert = len(polygon.vertices) - 1
-	adjacent = []
+	adjacent = vert.adjacent
 
-	for i in range(no_vert):
-		if (vert == polygon.vertices[i]):
-			index_1 = (i-1) % no_vert
-			index_2 = (i+1) % no_vert
-			adjacent.append(polygon.vertices[index_1])
-			adjacent.append(polygon.vertices[index_2])
-			break
+	if not adjacent:
+		polygon = vert.belongs_poly
+		no_vert = len(polygon.vertices) - 1
 
+		for i in range(no_vert):
+			if (vert == polygon.vertices[i]):
+				index_1 = (i-1) % no_vert
+				index_2 = (i+1) % no_vert
+				adjacent.append(polygon.vertices[index_1])
+				adjacent.append(polygon.vertices[index_2])
+				print("Adjacent:", polygon.vertices[index_1].name, polygon.vertices[index_2].name)
+				break
+	
 	return adjacent
 
 
@@ -209,31 +212,51 @@ def do_cross_poly(line_seg, polygon):
 
 		edge = classes.LineSeg(v1, v2)
 
-		cross_seg = do_cross_seg(line_seg, edge)
+		cross_seg_1 = do_cross_seg(line_seg, edge)
+		cross_seg_2 = do_cross_seg(edge, line_seg)
 
-		if (cross_seg == "Yes"):
+		# Debugging print
+		#print(f"{line_seg.v1.name}-{line_seg.v2.name} cross {v1.name}-{v2.name}? 1:{cross_seg_1}, 2:{cross_seg_2}")
+
+		if (cross_seg_1 == cross_seg_2 == "Yes"):
 			return True
-		elif(cross_seg == "No"):
+		elif(cross_seg_1 == "No" or cross_seg_2 == "No"):
 			continue
+
+
+		# TODO Verificar o problema com os vértices:
+		# e, h, i, t, u.
 
 		# Pelo menos um dos vértices da aresta em questão
 		# está contido no segmento de reta.
 		else:
-			if (cross_seg not in collinear):
-				collinear.append(cross_seg)
+			# Se for adjacente ao vértice de destino (que está
+			# em um polígono diferente do vértice de partida),
+			# então o vértice em cross_seg_1 é visível.
+			# Se for adjacente ao vértice de partida, também.
+			not_added = cross_seg_1 not in collinear
+			start_adjacent = get_adjacent(line_seg.v1)
+			dest_adjacent = get_adjacent(line_seg.v2)
+			if(cross_seg_1 in dest_adjacent or cross_seg_1 in start_adjacent):
+				continue
+			elif (not_added):
+				collinear.append(cross_seg_1)
 
-			
-		# TODO Verificar
+	for vert in collinear:
 
-		# Se o comprimento do segmento de reta for maior
-		# que a distância do primeiro de seus vértices
-		# a algum dos vértices contidos no segmento, então o 
-		# segmento cruza o polígono.
-		aux_seg_1 = classes.LineSeg(line_seg.v1, edge.v1)
-		aux_seg_2 = classes.LineSeg(line_seg.v1, edge.v2)
-		comp_1 = line_length(line_seg) > line_length(aux_seg_1)
-		comp_2 = line_length(line_seg) > line_length(aux_seg_2)
-		if (comp_1 or comp_2):
+		# TODO: Funciona para O entre IQ, mas não para
+		# 		I e H entre ET e EU
+
+		# Se o comprimento de line_seg for maior que a 
+		# distância de seus dois vértices a algum dos
+		# vértices colineares selecionados, então o 
+		# segmento cruza algum polígono.
+		aux_seg_1 = classes.LineSeg(line_seg.v1, vert)
+		aux_seg_2 = classes.LineSeg(line_seg.v2, vert)
+		seg_length = line_length(line_seg)
+		comp_1 = seg_length > line_length(aux_seg_1)
+		comp_2 = seg_length > line_length(aux_seg_2)
+		if (comp_1 and comp_2):
 			return True
 	
 	return False
@@ -242,12 +265,38 @@ def do_cross_poly(line_seg, polygon):
 # Retorna o tamanho de um segmento de reta.
 def line_length(line_seg):
 
-	x_diff = line_seg.v1.x - line_seg.v2.x
-	y_diff = line_seg.v1.y - line_seg.v2.y
+	x_diff = line_seg.v1.coord.x - line_seg.v2.coord.x
+	y_diff = line_seg.v1.coord.y - line_seg.v2.coord.y
 
 	length = (x_diff**2 + y_diff**2)**0.5
 
 	return length
+
+
+# Printa todos os vértices visíveis a partir de "vert"
+def vert_visibility(vert):
+
+	if vert.visible:
+		print(f"Vertex {vert.name} sees: ", end="")
+		for vert in vert.visible:
+			print(f"{vert.name}", end=" ")
+	else:
+		print(f"Vertex {vert.name} not expanded.", end="")
+	print("\n")
+
+
+# Revela todas as concavidades do problema.
+def print_bays(problem):
+
+	for polygon in problem["polygons"]:
+		if polygon.concavity:
+			print(f"\nPolygon {polygon.name} has a bay.")
+			print("Bay:", end="")
+			for vert in polygon.bay:
+				print(vert.name, end=" ")
+			print("\n")
+
+	return
 
 
 

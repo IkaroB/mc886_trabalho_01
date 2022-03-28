@@ -1,5 +1,5 @@
 import make_dict
-import visibility
+import visibility as vis
 import search_algorithms as search
 
 
@@ -9,10 +9,19 @@ def main():
 	problem = make_dict.main()
 
 	# Configura os polígonos não-convexos
-	visibility.make_concavity(problem)
-	#print_bays(problem)
+	vis.make_concavity(problem)
 	
+	# Debugging
 
+	# vis.print_bays(problem)
+
+	# start_vert = problem["start_end_vertices"][0]
+	# debug_vert_visibility(problem, start_vert)
+
+	# print(problem["vertices"][7].name)
+	vert = problem["vertices"][4]
+	debug_vert_visibility(problem, vert)
+		
 	# Algoritmos de busca
 	bfs_path = search.bfs(problem)
 
@@ -25,17 +34,9 @@ def main():
 	return
 
 
-def print_bays(problem):
-
-	for polygon in problem["polygons"]:
-		if polygon.concavity:
-			print(f"\nPolygon {polygon.name} has a bay.")
-			print("Bay:", end="")
-			for vert in polygon.bay:
-				print(vert.name, end=" ")
-			print()
-
-	return
+def debug_vert_visibility(problem, vert):
+	vis.expand_vert(problem, vert)
+	vis.vert_visibility(vert)
 
 
 if __name__ == "__main__":
