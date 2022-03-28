@@ -10,7 +10,7 @@ def make_dict():
 	dict_data = {
 			"vertices": [],
 			"polygons": [],
-			"start_end_points" : [],
+			"start_end_vertices" : [],
 			"explored" : []
 	}
 
@@ -51,7 +51,7 @@ def make_dict():
 				else:
 					new_vert = classes.Vertex("G", *line)
 				#new_vert.print()
-				dict_data["start_end_points"].append(new_vert)
+				dict_data["start_end_vertices"].append(new_vert)
 			
 			line = raw_data.readline()
 
