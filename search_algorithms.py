@@ -42,7 +42,7 @@ def ids(problem):
   # depth-limited DFS
   def deph_limit(node, depth):
     if depth == 0:
-      if node == problem:
+      if node == problem["start_end_vertices"][1]:
         return (node, True)
       else:
         return (None, True)
@@ -60,7 +60,7 @@ def ids(problem):
   depth = 0
   path = []
   for depth in range(sys.maxsize):
-    path, remaning = deph_limit(problem, depth)
+    path, remaning = deph_limit(problem["start_end_vertices"][0], depth)
     if not path:
       return path
     elif (not remaning):
