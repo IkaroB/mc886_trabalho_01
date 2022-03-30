@@ -20,7 +20,12 @@ class Vertex:
     self.adjacent = []
 
   def __eq__(self, other):
-    return self.name == other.name
+    if other.__class__ == Point:
+      return self.coord.x == other.x and self.coord.y == other.y
+    elif other.__class__ == Vertex:
+      return self.name == other.name
+    else:
+      return False
 
   def print(self):
     print(f"{self.name}: x={self.coord.x}, y={self.coord.y};")
@@ -60,6 +65,9 @@ class Point:
   def __init__(self, x, y):
     self.x = float(x)
     self.y = float(y)
+
+  def __eq__(self, other):
+    return self.x == other.x and self.y == other.y
 
   def print(self):
     print(f"x={self.x}, y={self.y};")
