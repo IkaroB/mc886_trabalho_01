@@ -10,6 +10,8 @@
 import heapq as hq
 import sys
 
+from numpy import append
+
 import classes
 import visibility
 
@@ -50,13 +52,7 @@ def bfs(problem):
       adj.distance = current.distance + visibility.line_length(
           classes.LineSeg(current, adj))
       if adj not in open_list:
-        if open_list:
-          for i in open_list:
-            if adj.distance >= i.distance:
-              break
-          hq.heappush(open_list, adj)
-        else:
-          hq.heappush(open_list, adj)
+        hq.heappush(open_list, adj)
 
   return None
 
@@ -65,29 +61,34 @@ def bfs(problem):
 def ids(problem):
 
   # depth-limited DFS
-  def deph_limit(problem, node, depth, max_depth, seen):
-    dest = problem["start_end_vertices"][1]
-    if node in seen:
-      return False
-    if depth > max_depth:
-      return False
-    if node == dest:
-      return True
-    seen.add(node)
-    for index, v in enumerate(node.visible):
-      v = visibility.expand_vert(problem, v)
-      node.visible[index] = v
-      deph_limit(problem, v, depth + 1, max_depth, seen)
+  def deph_limit(p, node, depth):
+    dest = p["start_end_vertices"][1]
+    if (node == dest) and (depth == 0):
+      return node
+    elif node == p["start_end_vertices"][0]:
+      return node
+    elif depth > 0:
+      child = visibility.expand_vert(p, node)
+      print(child)
+      for v in child.visible:
+        v.parent = child
+        res = deph_limit(p, v, depth - 1)
+        if res != None:
+          return res
+    else:
+      return None
 
   # IDS
-  depth = 0
-  root = visibility.expand_vert(problem, problem["start_end_vertices"][0])
-  found = False
-  while not found:
-    seen = set()
+  depth = 300
+  root = problem["start_end_vertices"][0]
+  dest = problem["start_end_vertices"][1]
+  while True:
+    path = []
+    found = deph_limit(problem, problem["start_end_vertices"][0], depth)
+    if found not in path:
+      path.append(found)
+      return path
     depth += 1
-    found = deph_limit(problem, root, 0, depth, seen)
-  return seen
 
 
 # Algoritmo A* Search
