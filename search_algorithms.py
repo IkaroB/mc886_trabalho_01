@@ -8,7 +8,6 @@
 # aresta dos polígonos.
 
 import copy
-import heapq as hq
 
 import classes
 import visibility
@@ -17,92 +16,7 @@ import visibility
 # Algoritmo Best-First Search
 def bfs(problem):
 
-  open_list = []
-  closed_list = []
-  hq.heapify(open_list)
-  hq.heapify(closed_list)
-
-  root = problem["start_end_vertices"][0]
-  final_dest = problem["start_end_vertices"][1]
-
-  root = visibility.expand_vert(problem, root)
-  hq.heappush(open_list, root)
-  #hq.heapify(root.visible)
-
-  while len(open_list) > 0:
-
-    for v in open_list:
-      print(v.distance, v, end=' ')
-    print('\nNEXT')
-
-    hq.heapify(open_list)
-    current = hq.heappop(open_list)
-    hq.heappush(closed_list, current)
-    if current == final_dest:
-      path = []
-      while current != root:
-        path.append(current)
-        current = current.parent
-      path.append(root)
-      return path[::-1]
-    for index, adj in enumerate(current.visible):
-      adj.parent = current
-      adj = visibility.expand_vert(problem, adj)
-      current.visible[index] = adj
-      hq.heapify(current.visible)
-      if adj in closed_list:
-        continue
-      adj.distance = current.distance + visibility.line_length(
-          classes.LineSeg(current, adj))
-      if adj not in open_list:
-        #  if open_list:
-        #for i in open_list:
-        #  if adj.distance >= i.distance:
-        #    break
-        #    hq.heappush(open_list, adj)
-        #  else:
-        hq.heappush(open_list, adj)
-
-  return None
-
-
-# Algoritmo Iterative Deepening Search
-def ids(problem):
-
-  # depth-limited DFS
-  def deph_limit(p, node, depth):
-    dest = p["start_end_vertices"][1]
-    if (node == dest) and (depth == 0):
-      return node
-    elif node == p["start_end_vertices"][0]:
-      return node
-    elif depth > 0:
-      child = visibility.expand_vert(p, node)
-      print(child)
-      for v in child.visible:
-        v.parent = child
-        res = deph_limit(p, v, depth - 1)
-        if res != None:
-          return res
-    else:
-      return None
-
-  # IDS
-  depth = 300
-  root = problem["start_end_vertices"][0]
-  dest = problem["start_end_vertices"][1]
-  while True:
-    path = []
-    found = deph_limit(problem, problem["start_end_vertices"][0], depth)
-    if found not in path:
-      path.append(found)
-      return path
-    depth += 1
-
-
-# Algoritmo A* Search
-def a_star(problem):
-
+  i = 0
   path = []
 
   open_list = []
@@ -113,7 +27,66 @@ def a_star(problem):
 
   root = visibility.expand_vert(problem, root)
   open_list.append(root)
+
+  while len(open_list) > 0:
+    current = open_list.pop(0)
+    closed_list.append(current)
+
+    if current == final_dest:
+      path = []
+      while current != root:
+        path.append(current)
+        current = current.parent
+      path.append(root)
+      return path
+
+    a = copy.copy(current)
+    while a != None:
+      problem["paths"][i].append(a)
+      a = a.parent
+    i += 1
+
+    for v in current.visible:
+      children = copy.copy(v)
+
+      children.parent = current
+      children = visibility.expand_vert(problem, children)
+
+      if children in closed_list:
+        continue
+
+      children.distance = current.distance + \
+                          visibility.line_length(classes.LineSeg(current, children))
+      if children not in closed_list:
+        open_list.append(children)
+
+    open_list.sort(key=lambda v: v.distance)
+  return path
+
+
+# Algoritmo Iterative Deepening Search
+def ids(problem):
+  path = []
+  return path
+
+
+# Algoritmo A* Search
+def a_star(problem):
+
+  def heuristic_1(children, final_dest):
+    return visibility.line_length(classes.LineSeg(children, final_dest))
+
   i = 0
+  path = []
+
+  open_list = []
+  closed_list = []
+
+  root = problem["start_end_vertices"][0]
+  final_dest = problem["start_end_vertices"][1]
+
+  root = visibility.expand_vert(problem, root)
+  open_list.append(root)
 
   while len(open_list) > 0:
     current = open_list.pop(0)
@@ -126,21 +99,14 @@ def a_star(problem):
         path.append(current)
         current = current.parent
       path.append(root)
-
-      print('BEST', end=': ')
-      for p in path:
-        print(f'{p.name}', end='-')
-      #print('ALL VISITED', end = ': ')
-      #for c in closed_list:
-      #  print(f'{c.name}', end = '-')
-      return
+      return path
 
     a = copy.copy(current)
-    print('PATH', end=': ')
+    problem["paths"].append([])
     while a != None:
-      print(f'{a.name}', end='-')
+      problem["paths"][i].append(a)
       a = a.parent
-    print()
+    i += 1
 
     for v in current.visible:
       children = copy.copy(v)
@@ -151,35 +117,70 @@ def a_star(problem):
       if children in closed_list:
         continue
 
-      children.distance = current.distance + \
-                          visibility.line_length(classes.LineSeg(current, children)) + \
-                          visibility.line_length(classes.LineSeg(children, final_dest))
-
-      #print(children.distance, children)
+      dist_to_children = visibility.line_length(
+          classes.LineSeg(current, children))
+      children.distance = current.distance + dist_to_children + heuristic_1(
+          children, final_dest)
 
       if children not in closed_list:
         open_list.append(children)
 
     open_list.sort(key=lambda v: v.distance)
-
-    # for v in open_list:
-    #   print(v.name, end = ' ')
-    # print('\n')
-
   return path
 
 
 # Algoritmo Iterative Deepening A*
 def ida_star(problem):
 
-  path = []
+  def search(current, final_dest, previous_cost, threshold, path):
 
-  return path
+    if current == final_dest:
+      return True
 
+    cost = previous_cost + visibility.line_length(
+        classes.LineSeg(current, final_dest))
 
-def main():
-  return
+    if cost > threshold:
+      return cost
 
+    minimum = float('inf')
+    for v in current.visible:
+      children = copy.copy(v)
+      children = visibility.expand_vert(problem, children)
+      if children not in path:
+        path.append(children)
+        temp_cost = search(children, final_dest, cost, threshold, path)
 
-if __name__ == "__main__":
-  main()
+        if temp_cost == True:
+          return True
+
+        if temp_cost < minimum:
+          minimum = temp_cost
+
+    return minimum
+
+  root = problem["start_end_vertices"][0]
+  final_dest = problem["start_end_vertices"][1]
+
+  root = visibility.expand_vert(problem, root)
+  threshold = visibility.line_length(classes.LineSeg(root, final_dest))
+  counter = 0
+
+  while True:
+    path = []
+    path.append(root)
+
+    temp_cost = search(root, final_dest, 0, threshold, path)
+
+    print(f'PATH: {counter}')
+    for p in path:
+      print(p.name, end='-')
+    print(f'\t New_limit:{temp_cost}\n\n')
+
+    if temp_cost == True:
+      return True, threshold
+    elif temp_cost == float('inf'):
+      return False, temp_cost
+    else:
+      threshold = temp_cost
+      counter += 1

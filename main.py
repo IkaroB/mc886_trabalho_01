@@ -25,9 +25,6 @@ def main():
   # Configura os polígonos não-convexos
   problem = vis.make_concavity(problem)
 
-  # root = problem["start_end_vertices"][0]
-  #problem, root = vis.expand_all(problem, root)
-
   # Algoritmos de busca
 
   #bfs_path = search.bfs(problem)
@@ -44,6 +41,7 @@ def main():
   #problem = pos_solution(problem)
 
   a_star_path = search.a_star(problem)
+  print(a_star_path)
 
   #ida_star_path = search.ida_star(problem)
 

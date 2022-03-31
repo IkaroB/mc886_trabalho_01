@@ -12,7 +12,7 @@ def make_dict():
       "vertices": [],
       "polygons": [],
       "start_end_vertices": [],
-      "explored": []
+      "paths": []
   }
 
   with open("ex1-dados.txt", "r") as raw_data:
@@ -44,7 +44,7 @@ def make_dict():
       # Start and end points
       elif (len(line) == 2):
         if not start:
-          new_vert = classes.Vertex("S", line[0],line[1])
+          new_vert = classes.Vertex("S", line[0], line[1])
           start = True
         else:
           new_vert = classes.Vertex("G", line[0], line[1])
