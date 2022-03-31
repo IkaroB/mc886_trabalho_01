@@ -30,20 +30,22 @@ def main():
 
   # Algoritmos de busca
 
-  bfs_path = search.bfs(problem)
-  for i in bfs_path:
-    print(i)
-  print(bfs_path[-1].distance)
+  #bfs_path = search.bfs(problem)
+  #for i in bfs_path:
+  #  print(i)
+  #print(bfs_path[-1].distance)
 
   # Clear vertices
   problem = pos_solution(problem)
 
-  ids_path = search.ids(problem)
-  print(ids_path)
+  #ids_path = search.ids(problem)
+  #print(ids_path)
+
+  #problem = pos_solution(problem)
 
   a_star_path = search.a_star(problem)
 
-  ida_star_path = search.ida_star(problem)
+  #ida_star_path = search.ida_star(problem)
 
   # Debugging
 
