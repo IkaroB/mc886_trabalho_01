@@ -1,5 +1,6 @@
 import sys
 
+import classes
 import make_dict
 import search_algorithms as search
 import visibility as vis
@@ -15,11 +16,19 @@ def print_paths(paths):
 
 
 def report(solution, paths, print_all, has_cust):
-  print(f"Path found: {solution}")
+  print(f"Path found: ", end="")
+  for vertex in solution:
+    if vertex.__class__ == classes.Vertex:
+      if vertex != solution[-1]:
+        print(vertex.name, end=" ")
+      else:
+        print(f"{vertex.name}.")
   if has_cust:
-    print(f"Distance: {solution[-1].distancia}")
+    if solution[-1].__class__ == classes.Vertex:
+      print(f"Distance: {solution[-1].distance}")
   if print_all:
     print_paths(paths)
+  print()
 
 
 def pos_solution(problem):
@@ -64,37 +73,45 @@ def main():
     # Algoritmos de busca
 
     if algorithm == "bfs":
+      print("Best-First Search")
       bfs_path = search.bfs(problem)
       bfs_all_paths = problem["paths"]
       report(bfs_path, bfs_all_paths, print_all, True)
     elif algorithm == "ids":
+      print("Iterative Deepening Search")
       ids_path = search.ids(problem)
       ids_all_paths = problem["paths"]
       report(ids_path, ids_all_paths, print_all, False)
     elif algorithm == "a_star":
+      print("A*")
       a_star_path = search.a_star(problem)
       a_star_all_paths = problem["paths"]
       report(a_star_path, a_star_all_paths, print_all, False)
     elif algorithm == "ida":
+      print("IDA*")
       ida_star_path = search.ida_star(problem)
       ida_star_all_paths = problem["paths"]
       report(ida_star_path, ida_star_all_paths, print_all, True)
     elif algorithm == "all":
       # BFS
+      print("Best-First Search")
       bfs_path = search.bfs(problem)
       bfs_all_paths = problem["paths"]
       report(bfs_path, bfs_all_paths, print_all, True)
       problem = pos_solution(problem)
       # IDS
+      print("Iterative Deepening Search")
       ids_path = search.ids(problem)
       ids_all_paths = problem["paths"]
       report(ids_path, ids_all_paths, print_all, False)
       problem = pos_solution(problem)
       # A*
+      print("A*")
       a_star_path = search.a_star(problem)
-      report(a_star_path, a_star_all_paths, print_all, False)
       a_star_all_paths = problem["paths"]
+      report(a_star_path, a_star_all_paths, print_all, False)
       # IDA*
+      print("IDA*")
       ida_star_path = search.ida_star(problem)
       ida_star_all_paths = problem["paths"]
       report(ida_star_path, ida_star_all_paths, print_all, True)
