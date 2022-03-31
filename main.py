@@ -19,9 +19,23 @@ def main():
   # debug_vert_visibility(problem, start_vert)
 
   # print(problem["vertices"][7].name)
-  vert = problem["vertices"][4]
-  debug_vert_visibility(problem, vert)
+  # vert = problem["vertices"][15]
+  # vert = problem["vertices"][4]
+  # vert = problem["vertices"][8]
+  # vert = problem["vertices"][20]
+  # vert = problem["vertices"][7]
+  for i in range(22):
+    if i == 5 or i == 14:
+      print(problem["vertices"][i].name, problem["vertices"][i].belongs_poly.name)
+      print('')
+      continue
+    else:
+      vis.debug_vert_visibility(problem, problem["vertices"][i])
 
+  vis.debug_vert_visibility(problem, problem["start_end_vertices"][0])
+
+
+  
   # Algoritmos de busca
   bfs_path = search.bfs(problem)
 
@@ -33,10 +47,6 @@ def main():
 
   return
 
-
-def debug_vert_visibility(problem, vert):
-  vis.expand_vert(problem, vert)
-  vis.vert_visibility(vert)
 
 
 if __name__ == "__main__":

@@ -40,7 +40,7 @@ def make_dict():
               continue
         new_poly = classes.Polygon(poly_name, *poly_vert_list)
         for vert in poly_vert_list:
-          vert.belongs_to(new_poly)
+          vert.belongs_poly = new_poly
         #new_poly.print()
         dict_data["polygons"].append(new_poly)
 

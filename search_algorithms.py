@@ -81,3 +81,9 @@ def ida_star(problem):
   path = []
 
   return path
+
+def main():
+  return
+
+if __name__ == "__main__":
+  main()

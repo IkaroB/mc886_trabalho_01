@@ -18,6 +18,7 @@ class Vertex:
     self.visible = []
     self.belongs_poly = None
     self.adjacent = []
+    self.visited = False
 
   def __eq__(self, other):
     if other.__class__ == Point:
