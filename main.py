@@ -4,6 +4,11 @@ import visibility as vis
 
 
 def pos_solution(problem):
+  for i in range(2):
+    problem["start_end_vertices"][i].visible = []
+    problem["start_end_vertices"][i].distance = 0
+    problem["start_end_vertices"][i].visited = False
+    problem["start_end_vertices"][i].parent = None
   for v in problem["vertices"]:
     v.visible = []
     v.distance = 0
@@ -34,6 +39,7 @@ def main():
   problem = pos_solution(problem)
 
   ids_path = search.ids(problem)
+  print(ids_path)
 
   a_star_path = search.a_star(problem)
 
