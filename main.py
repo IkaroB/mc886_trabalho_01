@@ -3,6 +3,15 @@ import search_algorithms as search
 import visibility as vis
 
 
+def pos_solution(problem):
+  for v in problem["vertices"]:
+    v.visible = []
+    v.distance = 0
+    v.visited = False
+    v.parent = None
+  return problem
+
+
 def main():
 
   # Constrói o dicionário do problema.
@@ -11,15 +20,19 @@ def main():
   # Configura os polígonos não-convexos
   problem = vis.make_concavity(problem)
 
-  root = problem["start_end_vertices"][0]
-
+  # root = problem["start_end_vertices"][0]
   #problem, root = vis.expand_all(problem, root)
 
   # Algoritmos de busca
+
   bfs_path = search.bfs(problem)
   for i in bfs_path:
     print(i)
   print(bfs_path[-1].distance)
+
+  # Clear vertices
+  problem = pos_solution(problem)
+
   ids_path = search.ids(problem)
 
   a_star_path = search.a_star(problem)
