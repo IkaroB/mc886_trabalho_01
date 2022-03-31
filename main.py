@@ -35,13 +35,16 @@ def main():
   # Clear vertices
   problem = pos_solution(problem)
 
-  #ids_path = search.ids(problem)
+  ids_path = search.ids(problem)
   #print(ids_path)
+  for i in ids_path:
+    print(i)
+  #print(problem["paths"])
 
   #problem = pos_solution(problem)
 
-  a_star_path = search.a_star(problem)
-  print(a_star_path)
+  # a_star_path = search.a_star(problem)
+  # print(a_star_path)
 
   #ida_star_path = search.ida_star(problem)
 

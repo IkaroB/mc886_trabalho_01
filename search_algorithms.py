@@ -8,6 +8,7 @@
 # aresta dos polígonos.
 
 import copy
+from unittest import result
 
 import classes
 import visibility
@@ -66,8 +67,49 @@ def bfs(problem):
 
 # Algoritmo Iterative Deepening Search
 def ids(problem):
-  path = []
-  return path
+
+  def ids_search(node, target, current_depth, max_depth, path):
+    if node == target:
+      return node, True
+
+    if current_depth == max_depth:
+      if len(node.visible) > 0:
+        return None, False
+      else:
+        return None, True
+
+    bottom_reached = True
+    for v in node.visible:
+      children = copy.copy(v)
+      children = visibility.expand_vert(problem, children)
+      if children not in path:
+        path.append(children)
+        result, bottom_reached_search = ids_search(children, target,
+                                                   current_depth + 1, max_depth,
+                                                   path)
+        if result is not None:
+          return result, True
+        bottom_reached = bottom_reached and bottom_reached_search
+
+    return None, bottom_reached
+
+  depth = 1
+  i = 0
+  bottom_reached = False
+  root = problem["start_end_vertices"][0]
+  root = visibility.expand_vert(problem, root)
+  final_dest = problem["start_end_vertices"][1]
+  while not bottom_reached:
+    path = []
+    path.append(root)
+    result, bottom_reached = ids_search(root, final_dest, 0, depth, path)
+    problem["paths"].append([])
+    problem["paths"][i].append(path)
+    if result is not None:
+      return path
+    depth *= 2
+    i += 1
+  return None
 
 
 # Algoritmo A* Search
@@ -90,7 +132,6 @@ def a_star(problem):
 
   while len(open_list) > 0:
     current = open_list.pop(0)
-    #print(f'CURRENT: {current.name} - DIST: {current.distance}')
     closed_list.append(current)
 
     if current == final_dest:
@@ -110,7 +151,6 @@ def a_star(problem):
 
     for v in current.visible:
       children = copy.copy(v)
-
       children.parent = current
       children = visibility.expand_vert(problem, children)
 
