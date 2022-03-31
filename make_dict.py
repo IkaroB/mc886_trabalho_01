@@ -6,7 +6,7 @@
 import classes
 
 
-def make_dict():
+def make_dict(filepath):
 
   dict_data = {
       "vertices": [],
@@ -15,7 +15,7 @@ def make_dict():
       "paths": []
   }
 
-  with open("ex1-dados.txt", "r") as raw_data:
+  with open(filepath, "r") as raw_data:
 
     start = False
     line = raw_data.readline()

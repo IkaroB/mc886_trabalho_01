@@ -1,6 +1,25 @@
+import sys
+
 import make_dict
 import search_algorithms as search
 import visibility as vis
+
+
+def print_paths(paths):
+  for path in paths:
+    for vertex in path:
+      if vertex != path[-1]:
+        print(vertex.name, end=" ")
+      else:
+        print(f"{vertex.name}.")
+
+
+def report(solution, paths, print_all, has_cust):
+  print(f"Path found: {solution}")
+  if has_cust:
+    print(f"Distance: {solution[-1].distancia}")
+  if print_all:
+    print_paths(paths)
 
 
 def pos_solution(problem):
@@ -9,6 +28,7 @@ def pos_solution(problem):
     problem["start_end_vertices"][i].distance = 0
     problem["start_end_vertices"][i].visited = False
     problem["start_end_vertices"][i].parent = None
+    problem["paths"] = []
   for v in problem["vertices"]:
     v.visible = []
     v.distance = 0
@@ -20,61 +40,64 @@ def pos_solution(problem):
 def main():
 
   # Constrói o dicionário do problema.
-  problem = make_dict.make_dict()
+  if len(sys.argv) < 2:
+    print("""
+      Usage: python main.py <filepath> [-a [all,bfs,ids,a_star,ida]] [-r]
+      -a: search algorithm to use. Default is all.
+      -r: print all paths.
+      """)
+    exit(1)
+  else:
+    filepath = sys.argv[1]
+    algorithm = "all"
+    print_all = False
+    if len(sys.argv) > 2:
+      if sys.argv[2] == "-a":
+        algorithm = sys.argv[3]
+      if sys.argv[2] == "-r" or sys.argv[4] == "-r":
+        print_all = True
+    problem = make_dict.make_dict(filepath)
 
-  # Configura os polígonos não-convexos
-  problem = vis.make_concavity(problem)
+    # Configura os polígonos não-convexos
+    problem = vis.make_concavity(problem)
 
-  # Algoritmos de busca
+    # Algoritmos de busca
 
-  #bfs_path = search.bfs(problem)
-  #for i in bfs_path:
-  #  print(i)
-  #print(bfs_path[-1].distance)
-
-  # Clear vertices
-  problem = pos_solution(problem)
-
-  ids_path = search.ids(problem)
-  #print(ids_path)
-  for i in ids_path:
-    print(i)
-  #print(problem["paths"])
-
-  #problem = pos_solution(problem)
-
-  # a_star_path = search.a_star(problem)
-  # print(a_star_path)
-
-  #ida_star_path = search.ida_star(problem)
-
-  # Debugging
-
-  # vis.print_bays(problem)
-
-  # start_vert = problem["start_end_vertices"][0]
-  # debug_vert_visibility(problem, start_vert)
-
-  # print(problem["vertices"][7].name)
-  # vert = problem["vertices"][15]
-  # vert = problem["vertices"][4]
-  # vert = problem["vertices"][8]
-  # vert = problem["vertices"][20]
-  # vert = problem["vertices"][7]
-
-  # for i in range(22):
-  #   if i == 5 or i == 14:
-  #     print(problem["vertices"][i].name,
-  #           problem["vertices"][i].belongs_poly.name)
-  #     print('')
-  #     continue
-  #   else:
-  #     vis.debug_vert_visibility(problem, problem["vertices"][i])
-
-  # vis.debug_vert_visibility(problem, problem["start_end_vertices"][0])
-
-  return
+    if algorithm == "bfs":
+      bfs_path = search.bfs(problem)
+      bfs_all_paths = problem["paths"]
+      report(bfs_path, bfs_all_paths, print_all, True)
+    elif algorithm == "ids":
+      ids_path = search.ids(problem)
+      ids_all_paths = problem["paths"]
+      report(ids_path, ids_all_paths, print_all, False)
+    elif algorithm == "a_star":
+      a_star_path = search.a_star(problem)
+      a_star_all_paths = problem["paths"]
+      report(a_star_path, a_star_all_paths, print_all, False)
+    elif algorithm == "ida":
+      ida_star_path = search.ida_star(problem)
+      ida_star_all_paths = problem["paths"]
+      report(ida_star_path, ida_star_all_paths, print_all, True)
+    elif algorithm == "all":
+      # BFS
+      bfs_path = search.bfs(problem)
+      bfs_all_paths = problem["paths"]
+      report(bfs_path, bfs_all_paths, print_all, True)
+      problem = pos_solution(problem)
+      # IDS
+      ids_path = search.ids(problem)
+      ids_all_paths = problem["paths"]
+      report(ids_path, ids_all_paths, print_all, False)
+      problem = pos_solution(problem)
+      # A*
+      a_star_path = search.a_star(problem)
+      report(a_star_path, a_star_all_paths, print_all, False)
+      a_star_all_paths = problem["paths"]
+      # IDA*
+      ida_star_path = search.ida_star(problem)
+      ida_star_all_paths = problem["paths"]
+      report(ida_star_path, ida_star_all_paths, print_all, True)
 
 
-if __name__ == "__main__":
-  main()
+main()
