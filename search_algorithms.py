@@ -8,7 +8,6 @@
 # aresta dos polígonos.
 
 import copy
-from unittest import result
 
 import classes
 import visibility
@@ -42,6 +41,7 @@ def bfs(problem):
       return path
 
     a = copy.copy(current)
+    problem["paths"].append([])
     while a != None:
       problem["paths"][i].append(a)
       a = a.parent
