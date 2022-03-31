@@ -65,31 +65,29 @@ def bfs(problem):
 def ids(problem):
 
   # depth-limited DFS
-  def deph_limit(node, depth):
-    if depth == 0:
-      if node == problem["start_end_vertices"][1]:
-        return (node, True)
-      else:
-        return (None, True)
-    elif depth > 0:
-      any_remaning = False
-      for adj in node.visible:
-        path, remaning = deph_limit(adj, depth - 1)
-        if not path:
-          return (path, True)
-        if remaning:
-          any_remaning = True
-      return (None, any_remaning)
+  def deph_limit(problem, node, depth, max_depth, seen):
+    dest = problem["start_end_vertices"][1]
+    if node in seen:
+      return False
+    if depth > max_depth:
+      return False
+    if node == dest:
+      return True
+    seen.add(node)
+    for index, v in enumerate(node.visible):
+      v = visibility.expand_vert(problem, v)
+      node.visible[index] = v
+      deph_limit(problem, v, depth + 1, max_depth, seen)
 
   # IDS
   depth = 0
-  path = []
-  for depth in range(sys.maxsize):
-    path, remaning = deph_limit(problem["start_end_vertices"][0], depth)
-    if not path:
-      return path
-    elif (not remaning):
-      return None
+  root = visibility.expand_vert(problem, problem["start_end_vertices"][0])
+  found = False
+  while not found:
+    seen = set()
+    depth += 1
+    found = deph_limit(problem, root, 0, depth, seen)
+  return seen
 
 
 # Algoritmo A* Search
