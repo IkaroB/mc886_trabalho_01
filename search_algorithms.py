@@ -27,6 +27,7 @@ def bfs(problem):
 
   root = visibility.expand_vert(problem, root)
   hq.heappush(open_list, root)
+  #hq.heapify(root.visible)
 
   while len(open_list) > 0:
     hq.heapify(open_list)
@@ -43,14 +44,17 @@ def bfs(problem):
       adj.parent = current
       adj = visibility.expand_vert(problem, adj)
       current.visible[index] = adj
+      hq.heapify(current.visible)
       if adj in closed_list:
         continue
       adj.distance = current.distance + visibility.line_length(
           classes.LineSeg(current, adj))
       if adj not in open_list:
         if open_list:
-          if adj.distance < open_list[0].distance:
-            hq.heappush(open_list, adj)
+          for i in open_list:
+            if adj.distance >= i.distance:
+              break
+          hq.heappush(open_list, adj)
         else:
           hq.heappush(open_list, adj)
 
