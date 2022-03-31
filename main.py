@@ -6,10 +6,25 @@ import visibility as vis
 def main():
 
   # Constrói o dicionário do problema.
-  problem = make_dict.main()
+  problem = make_dict.make_dict()
 
   # Configura os polígonos não-convexos
-  vis.make_concavity(problem)
+  problem = vis.make_concavity(problem)
+
+  root = problem["start_end_vertices"][0]
+
+  #problem, root = vis.expand_all(problem, root)
+
+  # Algoritmos de busca
+  bfs_path = search.bfs(problem)
+  for i in bfs_path:
+    print(i)
+  print(bfs_path[-1].distance)
+  ids_path = search.ids(problem)
+
+  a_star_path = search.a_star(problem)
+
+  ida_star_path = search.ida_star(problem)
 
   # Debugging
 
@@ -19,24 +34,24 @@ def main():
   # debug_vert_visibility(problem, start_vert)
 
   # print(problem["vertices"][7].name)
-  vert = problem["vertices"][4]
-  debug_vert_visibility(problem, vert)
+  # vert = problem["vertices"][15]
+  # vert = problem["vertices"][4]
+  # vert = problem["vertices"][8]
+  # vert = problem["vertices"][20]
+  # vert = problem["vertices"][7]
 
-  # Algoritmos de busca
-  bfs_path = search.bfs(problem)
+  # for i in range(22):
+  #   if i == 5 or i == 14:
+  #     print(problem["vertices"][i].name,
+  #           problem["vertices"][i].belongs_poly.name)
+  #     print('')
+  #     continue
+  #   else:
+  #     vis.debug_vert_visibility(problem, problem["vertices"][i])
 
-  ids_path = search.ids(problem)
-
-  a_star_path = search.a_star(problem)
-
-  ida_star_path = search.ida_star(problem)
+  # vis.debug_vert_visibility(problem, problem["start_end_vertices"][0])
 
   return
-
-
-def debug_vert_visibility(problem, vert):
-  vis.expand_vert(problem, vert)
-  vis.vert_visibility(vert)
 
 
 if __name__ == "__main__":

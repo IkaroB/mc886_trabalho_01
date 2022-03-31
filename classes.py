@@ -14,6 +14,9 @@ class LineSeg:
     self.v1 = v1
     self.v2 = v2
 
+  def __eq__(self, other):
+    return (self.v1 == other.v1) and (self.v2 == other.v2)
+
   def __lt__(self, other):
     return self.weight < other.weight
 
@@ -42,11 +45,22 @@ class Vertex:
     return self.distance < other.distance
 
   def print(self):
-    print(f"{self.name}: x={self.coord.x}, y={self.coord.y};")
+    out = f"{self.name}: x={self.coord.x}, y={self.coord.y};"
     if self.visible:
-      print(f"\tVisible:{self.visible}")
+      out += f"\tVisible:{self.visible}"
     if self.belongs_poly:
-      print(f"\tBelongs to:{self.belongs_poly.name}\n")
+      out += f"\tBelongs to:{self.belongs_poly.name}\n"
+    return out
+
+  def __str__(self):
+    out = f"{self.name}: x={self.coord.x}, y={self.coord.y};"
+    if self.visible:
+      out += f"\tVisible: "
+      for v in self.visible:
+        out += f"{v.name} "
+    if self.belongs_poly:
+      out += f"\tBelongs to:{self.belongs_poly.name}\n"
+    return out
 
   def belongs_to(self, polygon):
     self.belongs_poly = polygon
@@ -64,18 +78,22 @@ class Vertex:
 
 class Polygon:
 
-  def __init__(self, name, *vertices):
+  def __init__(self, name, vertices):
     self.name = name
     self.vertices = vertices
     self.concavity = False
     self.bay = []
 
-  def print(self):
-    print(f"{self.name}:", end="")
-    for vert in self.vertices:
-      print("\t", end="")
-      vert.print()
-    print("\n")
+  def __str__(self):
+    out = f"{self.name}:"
+    if self.vertices:
+      for vert in self.vertices:
+        out += "\t"
+        out += str(vert)
+    else:
+      out += "Sem vertices definidos"
+    out += "\n"
+    return out
 
 
 class Point:

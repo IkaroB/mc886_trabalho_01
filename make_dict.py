@@ -21,11 +21,9 @@ def make_dict():
     line = raw_data.readline()
     while (line):
       line = line.split()
-
       # Vertices
       if (len(line) == 3):
-        new_vert = classes.Vertex(*line)
-        #new_vert.print()
+        new_vert = classes.Vertex(name=line[0], x=line[1], y=line[2])
         dict_data["vertices"].append(new_vert)
 
       # Polygons
@@ -38,30 +36,20 @@ def make_dict():
             if (vert_name == vert.name):
               poly_vert_list.append(vert)
               continue
-        new_poly = classes.Polygon(poly_name, *poly_vert_list)
+        new_poly = classes.Polygon(poly_name, poly_vert_list)
         for vert in poly_vert_list:
-          vert.belongs_to(new_poly)
-        #new_poly.print()
+          vert.belongs_poly = new_poly
         dict_data["polygons"].append(new_poly)
 
       # Start and end points
       elif (len(line) == 2):
         if not start:
-          new_vert = classes.Vertex("S", *line)
+          new_vert = classes.Vertex("S", line[0],line[1])
           start = True
         else:
-          new_vert = classes.Vertex("G", *line)
-        #new_vert.print()
+          new_vert = classes.Vertex("G", line[0], line[1])
         dict_data["start_end_vertices"].append(new_vert)
 
       line = raw_data.readline()
 
   return dict_data
-
-
-def main():
-  return make_dict()
-
-
-if __name__ == "__main__":
-  main()

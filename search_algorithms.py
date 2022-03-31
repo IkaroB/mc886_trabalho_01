@@ -25,9 +25,10 @@ def bfs(problem):
   root = problem["start_end_vertices"][0]
   final_dest = problem["start_end_vertices"][1]
 
+  root = visibility.expand_vert(problem, root)
   hq.heappush(open_list, root)
 
-  while not len(open_list) > 0:
+  while len(open_list) > 0:
     hq.heapify(open_list)
     current = hq.heappop(open_list)
     hq.heappush(closed_list, current)
@@ -38,13 +39,19 @@ def bfs(problem):
         current = current.parent
       path.append(root)
       return path[::-1]
-    for adj in current.visible:
+    for index, adj in enumerate(current.visible):
+      adj.parent = current
+      adj = visibility.expand_vert(problem, adj)
+      current.visible[index] = adj
       if adj in closed_list:
         continue
       adj.distance = current.distance + visibility.line_length(
           classes.LineSeg(current, adj))
       if adj not in open_list:
-        if adj.distance < open_list[0].distance:
+        if open_list:
+          if adj.distance < open_list[0].distance:
+            hq.heappush(open_list, adj)
+        else:
           hq.heappush(open_list, adj)
 
   return None
@@ -95,3 +102,11 @@ def ida_star(problem):
   path = []
 
   return path
+
+
+def main():
+  return
+
+
+if __name__ == "__main__":
+  main()
