@@ -22,6 +22,7 @@ def expand_vert(problem, curr_vert):
       visible_in_poly = get_visible_in_poly(curr_vert)
       for vis_vert in visible_in_poly:
         if (vis_vert not in problem["explored"]):
+          vis_vert.parent = curr_vert
           visible.append(vis_vert)
           problem["explored"].append(vis_vert)
 
@@ -31,6 +32,7 @@ def expand_vert(problem, curr_vert):
         possible_line = classes.LineSeg(curr_vert, poly_vert)
         if (is_visible(possible_line, problem)):
           if (poly_vert not in problem["explored"]):
+            poly_vert.parent = curr_vert
             visible.append(poly_vert)
             problem["explored"].append(poly_vert)
 
@@ -39,6 +41,7 @@ def expand_vert(problem, curr_vert):
   possible_line = classes.LineSeg(curr_vert, poly_vert)
   if (is_visible(possible_line, problem)):
     if (poly_vert not in problem["explored"]):
+      vis_vert.parent = curr_vert
       visible.append(poly_vert)
       problem["explored"].append(poly_vert)
 

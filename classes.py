@@ -2,12 +2,20 @@
 
 # Este módulo python contém as classes usadas no exercício.
 
+import visibility
+
 
 class LineSeg:
+
+  def set_weight(self):
+    self.weight = visibility.line_length(self)
 
   def __init__(self, v1, v2):
     self.v1 = v1
     self.v2 = v2
+
+  def __lt__(self, other):
+    return self.weight < other.weight
 
 
 class Vertex:
@@ -18,6 +26,9 @@ class Vertex:
     self.visible = []
     self.belongs_poly = None
     self.adjacent = []
+    self.distance = 0
+    self.visited = False
+    self.parent = None
 
   def __eq__(self, other):
     if other.__class__ == Point:
@@ -26,6 +37,9 @@ class Vertex:
       return self.name == other.name
     else:
       return False
+
+  def __lt__(self, other):
+    return self.distance < other.distance
 
   def print(self):
     print(f"{self.name}: x={self.coord.x}, y={self.coord.y};")
@@ -42,6 +56,10 @@ class Vertex:
 
   def get_visited(self):
     return self.visited
+
+  def set_distance_and_visited(self, dest):
+    self.visited = True
+    self.distance = visibility.line_length(LineSeg(self, dest))
 
 
 class Polygon:

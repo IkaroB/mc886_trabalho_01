@@ -7,32 +7,46 @@
 # por vértices de polígonos sem que o caminho cruze qualquer
 # aresta dos polígonos.
 
-import queue
+import heapq as hq
 import sys
+
+import classes
+import visibility
 
 
 # Algoritmo Best-First Search
 def bfs(problem):
-  visited = queue.Queue()
-  path = []
 
-  # Marca o vértice inicial como visitado e insere na fila
-  path.append(problem["start_end_vertices"][0])
-  problem["start_end_vertices"][0].set_visited(True)
-  visited.put(problem["start_end_vertices"][0])
+  open_list = []
+  closed_list = []
+  hq.heapify(open_list)
+  hq.heapify(closed_list)
 
-  # O caminho é construído a partir da fila de vértices visitados
-  while not visited.empty():
-    v = visited.get()
-    # Se o vértice atual é o vértice final, o caminho foi encontrado
-    if v == problem["start_end_vertices"][1]:
-      path.append(v)
-      return path
-    for adj in v.visible:
-      if not adj.get_visited():
-        adj.set_visited(True)
-        visited.put(adj)
-        path.append(adj)
+  root = problem["start_end_vertices"][0]
+  final_dest = problem["start_end_vertices"][1]
+
+  hq.heappush(open_list, root)
+
+  while not len(open_list) > 0:
+    hq.heapify(open_list)
+    current = hq.heappop(open_list)
+    hq.heappush(closed_list, current)
+    if current == final_dest:
+      path = []
+      while current != root:
+        path.append(current)
+        current = current.parent
+      path.append(root)
+      return path[::-1]
+    for adj in current.visible:
+      if adj in closed_list:
+        continue
+      adj.distance = current.distance + visibility.line_length(
+          classes.LineSeg(current, adj))
+      if adj not in open_list:
+        if adj.distance < open_list[0].distance:
+          hq.heappush(open_list, adj)
+
   return None
 
 
