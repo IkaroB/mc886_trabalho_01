@@ -81,6 +81,7 @@ def ids(problem):
     bottom_reached = True
     for v in node.visible:
       children = copy.copy(v)
+      children.parent = node
       children = visibility.expand_vert(problem, children)
       if children not in path:
         path.append(children)
@@ -103,11 +104,25 @@ def ids(problem):
     path = []
     path.append(root)
     result, bottom_reached = ids_search(root, final_dest, 0, depth, path)
+
+    print(f'PATH: {i}')
+    for p in path:
+      print(p.name, end='-')
+    print(f'\t New_limit:{depth}\n\n')
+
+    print('BEST', end = ': ')
+    a = copy.copy(path[-1])
+    
+    while a != None:
+      print(a.name, end = '-')
+      a = a.parent
+    print('\n\n')
+
     problem["paths"].append([])
     problem["paths"][i].append(path)
     if result is not None:
       return path
-    depth *= 2
+    depth += 1
     i += 1
   return None
 
@@ -186,6 +201,8 @@ def ida_star(problem):
     minimum = float('inf')
     for v in current.visible:
       children = copy.copy(v)
+      children.parent = current
+
       children = visibility.expand_vert(problem, children)
       if children not in path:
         path.append(children)
@@ -217,10 +234,18 @@ def ida_star(problem):
       print(p.name, end='-')
     print(f'\t New_limit:{temp_cost}\n\n')
 
+
+    print('BEST', end = ': ')
+    a = copy.copy(path[-1])
+    while a != None:
+      print(a.name, end = '-')
+      a = a.parent
+    print('\n\n')
+
     if temp_cost == True:
-      return True, threshold
+      return #RETORNAR O PATH AQUI (O MELHOR PATH A PARTIR DO PRINT DO a)
     elif temp_cost == float('inf'):
-      return False, temp_cost
+      return #NAO ACHOU SOLUCAÇÃO, RETORNA FALSE OU OUTRO PADRÃO
     else:
       threshold = temp_cost
       counter += 1
