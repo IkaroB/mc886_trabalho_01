@@ -8,6 +8,7 @@
 # aresta dos polígonos.
 
 import heapq as hq
+import copy
 import sys
 
 import classes
@@ -30,6 +31,11 @@ def bfs(problem):
   #hq.heapify(root.visible)
 
   while len(open_list) > 0:
+    
+    for v in open_list:
+      print(v.distance, v, end = ' ')
+    print('\nNEXT')
+
     hq.heapify(open_list)
     current = hq.heappop(open_list)
     hq.heappush(closed_list, current)
@@ -50,13 +56,13 @@ def bfs(problem):
       adj.distance = current.distance + visibility.line_length(
           classes.LineSeg(current, adj))
       if adj not in open_list:
-        if open_list:
-          for i in open_list:
-            if adj.distance >= i.distance:
-              break
-          hq.heappush(open_list, adj)
-        else:
-          hq.heappush(open_list, adj)
+      #  if open_list:
+          #for i in open_list:
+          #  if adj.distance >= i.distance:
+          #    break
+      #    hq.heappush(open_list, adj)
+      #  else:
+        hq.heappush(open_list, adj)
 
   return None
 
@@ -94,6 +100,68 @@ def ids(problem):
 def a_star(problem):
 
   path = []
+  
+  open_list = []
+  closed_list = []
+
+  root = problem["start_end_vertices"][0]
+  final_dest = problem["start_end_vertices"][1]
+
+  root = visibility.expand_vert(problem, root)
+  open_list.append(root)
+  i = 0
+
+  while len(open_list) > 0:
+    current = open_list.pop(0)
+    #print(f'CURRENT: {current.name} - DIST: {current.distance}')
+    closed_list.append(current)
+
+    if current == final_dest:
+      path = []
+      while current != root:
+        path.append(current)
+        current = current.parent
+      path.append(root)
+      
+      print('BEST', end = ': ')
+      for p in path:
+        print(f'{p.name}', end='-')
+      #print('ALL VISITED', end = ': ')
+      #for c in closed_list:
+      #  print(f'{c.name}', end = '-')
+      return
+
+    
+    a = copy.copy(current)
+    print('PATH', end=': ')
+    while a != None:
+      print(f'{a.name}', end = '-')
+      a = a.parent
+    print()
+
+    for v in current.visible:
+      children = copy.copy(v)
+
+      children.parent = current
+      children = visibility.expand_vert(problem, children)
+      
+      if children in closed_list:
+        continue
+      
+      children.distance = current.distance + \
+                          visibility.line_length(classes.LineSeg(current, children)) + \
+                          visibility.line_length(classes.LineSeg(children, final_dest))
+      
+      #print(children.distance, children)
+
+
+      if children not in closed_list: open_list.append(children)
+    
+    open_list.sort(key = lambda v: v.distance)
+
+    # for v in open_list:
+    #   print(v.name, end = ' ')
+    # print('\n')
 
   return path
 
