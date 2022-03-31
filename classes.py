@@ -41,6 +41,9 @@ class Vertex:
     else:
       return False
 
+  def __hash__(self):
+    return hash(self.name)
+
   def __lt__(self, other):
     return self.distance < other.distance
 
