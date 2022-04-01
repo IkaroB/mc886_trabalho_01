@@ -38,7 +38,7 @@ def bfs(problem):
         path.append(current)
         current = current.parent
       path.append(root)
-      return path
+      return path[::-1]
 
     a = copy.copy(current)
     problem["paths"].append([])
@@ -105,23 +105,20 @@ def ids(problem):
     path.append(root)
     result, bottom_reached = ids_search(root, final_dest, 0, depth, path)
 
-    print(f'PATH: {i}')
-    for p in path:
-      print(p.name, end='-')
-    print(f'\t New_limit:{depth}\n\n')
-
-    print('BEST', end = ': ')
-    a = copy.copy(path[-1])
-    
-    while a != None:
-      print(a.name, end = '-')
-      a = a.parent
-    print('\n\n')
-
     problem["paths"].append([])
-    problem["paths"][i].append(path)
+    for p in path:
+      problem["paths"][i].append(p)
+
+    best_path = []
+    a = copy.copy(path[-1])
+
+    while a != None:
+      best_path.append(a)
+      a = a.parent
+
     if result is not None:
-      return path
+      # best_path[0], best_path[-1] = best_path[-1], best_path[0]
+      return best_path[::-1]
     depth += 1
     i += 1
   return None
@@ -155,7 +152,7 @@ def a_star(problem):
         path.append(current)
         current = current.parent
       path.append(root)
-      return path
+      return path[::-1]
 
     a = copy.copy(current)
     problem["paths"].append([])
@@ -229,23 +226,20 @@ def ida_star(problem):
 
     temp_cost = search(root, final_dest, 0, threshold, path)
 
-    print(f'PATH: {counter}')
+    problem["paths"].append([])
     for p in path:
-      print(p.name, end='-')
-    print(f'\t New_limit:{temp_cost}\n\n')
+      problem["paths"][counter].append(p)
 
-
-    print('BEST', end = ': ')
+    best_path = []
     a = copy.copy(path[-1])
     while a != None:
-      print(a.name, end = '-')
+      best_path.append(a)
       a = a.parent
-    print('\n\n')
 
     if temp_cost == True:
-      return #RETORNAR O PATH AQUI (O MELHOR PATH A PARTIR DO PRINT DO a)
+      return best_path[::-1]
     elif temp_cost == float('inf'):
-      return #NAO ACHOU SOLUCAÇÃO, RETORNA FALSE OU OUTRO PADRÃO
+      return None
     else:
       threshold = temp_cost
       counter += 1
