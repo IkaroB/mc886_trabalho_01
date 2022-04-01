@@ -136,19 +136,25 @@ def a_star(problem):
   i = 0
   path = []
 
+  # Inicializa vetores de controle
   open_list = []
   closed_list = []
 
+  # Inicializa vértice inicial e final
   root = problem["start_end_vertices"][0]
   final_dest = problem["start_end_vertices"][1]
 
+  # Gera os filhos do vértice raiz
   root = visibility.expand_vert(problem, root)
   open_list.append(root)
 
   while len(open_list) > 0:
+    
+    # Retira o vértice com o menor f(x) = g(x) + h(x) e adiciona nos visitados
     current = open_list.pop(0)
     closed_list.append(current)
 
+    # Caso o vértice atual é o final, encerra o programa retornando o caminho encontrado
     if current == final_dest:
       path = []
       while current != root:
@@ -164,6 +170,7 @@ def a_star(problem):
       a = a.parent
     i += 1
 
+    # Para cada filho gerado, calcula o f(x) e adiciona na fila de prioridade
     for v in current.visible:
       children = copy.copy(v)
       children.parent = current
@@ -180,6 +187,7 @@ def a_star(problem):
       if children not in closed_list:
         open_list.append(children)
 
+    # Ordena a fila baseado no f(x)
     open_list.sort(key=lambda v: v.distance)
   return path
 
@@ -189,16 +197,21 @@ def ida_star(problem):
 
   def search(current, final_dest, previous_cost, threshold, path):
 
+    # Caso o vértice atual for o final, para o programa
     if current == final_dest:
       return True
 
+    # Calcula o f(x) do nodo atual
     cost = previous_cost + visibility.line_length(
         classes.LineSeg(current, final_dest))
 
+    # Caso o f(x) atual for maior que o f(x) máximo, retorna o f(x) atual
     if cost > threshold:
       return cost
 
     minimum = float('inf')
+
+    # Para cada filho gerado, expande os nós e realiza a busca por profundidade baseado no f(x)
     for v in current.visible:
       children = copy.copy(v)
       children.parent = current
@@ -216,10 +229,14 @@ def ida_star(problem):
 
     return minimum
 
+  # Inicializa os vértices inicial e final
   root = problem["start_end_vertices"][0]
   final_dest = problem["start_end_vertices"][1]
 
+  # Gera os filhos da raíz
   root = visibility.expand_vert(problem, root)
+
+  # Define o threshold inicial (distancia euclidiana entre o ponto inicial e final)
   threshold = visibility.line_length(classes.LineSeg(root, final_dest))
   counter = 0
 
@@ -227,6 +244,7 @@ def ida_star(problem):
     path = []
     path.append(root)
 
+    # Busca em profundidade, limitada pelo threshold
     temp_cost = search(root, final_dest, 0, threshold, path)
 
     print(f'PATH: {counter}')
