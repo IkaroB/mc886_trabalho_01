@@ -95,8 +95,7 @@ def poly_concavity(polygon):
       # concavidade.
       if (orientation(p1, p2, p3) == -1):
         polygon.concavity = True
-        for a in range(3):
-          bay_vert = polygon.vertices[(i + a) % no_vert]
+        for bay_vert in [v1, v2, v3]:
           if (bay_vert not in polygon.bay):
             polygon.bay.append(bay_vert)
 
