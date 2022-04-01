@@ -1,5 +1,3 @@
-# Exercício 1 de MO416A/MC886B 1s2022
-
 # Este programa faz um dicionário com vértices, polígonos, e
 # pontos de chegada e de partida a partir de um arquivo texto.
 

@@ -1,5 +1,3 @@
-# Exercício 1 de MO416A/MC886B 1s2022
-
 # Este módulo python contém os algoritmos necessários para
 # a expansão dos vértices, que consiste em descobrir quais
 # outros vértices são visíveis para o vértice atual.
@@ -23,7 +21,6 @@ def expand_vert(problem, curr_vert):
       visible_in_poly = get_visible_in_poly(curr_vert)
       for vis_vert in visible_in_poly:
         if (not vis_vert.visited):
-          # print(vis_vert.name, "added from within the polygon")
           visible.append(vis_vert)
 
     # Outros polígonos.
@@ -33,7 +30,6 @@ def expand_vert(problem, curr_vert):
         possible_line = classes.LineSeg(curr_vert, poly_vert)
         if (is_visible(possible_line, problem)):
           if (not poly_vert.visited):
-            # print(poly_vert.name, "added from another polygon")
             visible.append(poly_vert)
 
   # Checa o caso em que o destino é visível
@@ -52,7 +48,6 @@ def expand_vert(problem, curr_vert):
 def is_visible(possible_line, problem):
 
   for polygon in problem["polygons"]:
-    #print(polygon)
     if (do_cross_poly(possible_line, polygon)):
       return False
 
@@ -87,10 +82,6 @@ def poly_concavity(polygon):
       p2 = v2.coord
       p3 = v3.coord
 
-      #print(f"\nPolygon: {polygon.name}, vertices: {v1.name}, {v2.name}, {v3.name};")
-      #print("\tx:" + p1.x,p2.x,p3.x)
-      #print("\ty:" + p1.y,p2.y,p3.y)
-
       # Constrói a baía e modifica o parâmetro de
       # concavidade.
       if (orientation(p1, p2, p3) == -1):
@@ -110,7 +101,6 @@ def orientation(p1, p2, p3):
   m = [[float(p1.x), float(p2.x), float(p3.x)],
        [float(p1.y), float(p2.y), float(p3.y)], [1.0, 1.0, 1.0]]
   det = np.linalg.det(m)
-  #print("\tdet:", det)
 
   # O determinante do numpy nem sempre retorna zero quando
   # há colinearidade.
@@ -120,8 +110,6 @@ def orientation(p1, p2, p3):
     orientation = -1
   elif (det > 0):
     orientation = 1
-
-  #print("\torientation:", orientation)
 
   return orientation
 
@@ -177,8 +165,6 @@ def get_adjacent(vert):
           index_2 = (i + 1) % no_vert
           adjacent.append(polygon.vertices[index_1])
           adjacent.append(polygon.vertices[index_2])
-          #print("Adjacent:", polygon.vertices[index_1].name,
-          #polygon.vertices[index_2].name)
           break
 
   return adjacent
@@ -211,8 +197,6 @@ def do_cross_seg(line_seg_1, line_seg_2):
   orientation_2 = orientation(p1, p2, p3)
 
   if (orientation_1 == 0 and orientation_2 == 0):
-    #print(f"{line_seg_1.v1.name}-{line_seg_1.v2.name}: ", end="")
-    #print(line_seg_2.v1.name, line_seg_2.v2.name)
     return [line_seg_2.v1, line_seg_2.v2]
 
   if (orientation_1 == 0):
@@ -270,12 +254,6 @@ def do_cross_poly(line_seg, polygon):
         continue
       elif (not_added):
         collinear.append(cross_seg_1)
-
-    # if collinear:
-    #   print(f"Collinear to {line_seg.v1.name}-{line_seg.v2.name}: ", end="")
-    #   for aux_vert in collinear:
-    #     print(aux_vert.name, end=" ")
-    #   print("\n")
 
   # Um dicionário contendo como chaves cada um dos
   # polígonos que contêm os vértices colineares ao
@@ -368,12 +346,3 @@ def print_bays(problem):
 def debug_vert_visibility(problem, vert):
   expand_vert(problem, vert)
   vert_visibility(vert)
-
-
-# def expand_all(problem, node):
-#   if node == problem["start_end_vertices"][1]:
-#     return (problem, node)
-#   else:
-#     node = expand_vert(problem, node)
-#     for v in node.visible:
-#       expand_all(problem, v)

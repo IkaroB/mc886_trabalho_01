@@ -1,5 +1,3 @@
-# Exercício 1 de MO416A/MC886B 1s2022
-
 # Este módulo python contém as classes usadas no exercício.
 
 import visibility

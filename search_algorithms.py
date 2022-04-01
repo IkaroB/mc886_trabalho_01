@@ -1,5 +1,3 @@
-# Exercício 1 de MO416A/MC886B 1s2022
-
 # Este módulo python contém implementações dos algoritmos de
 # busca Best-First Search, Iterative Deepening Search, A*,
 # e Iterative Deepening A*, aplicados ao problema de busca
@@ -117,7 +115,6 @@ def ids(problem):
       a = a.parent
 
     if result is not None:
-      # best_path[0], best_path[-1] = best_path[-1], best_path[0]
       return best_path[::-1]
     depth += 1
     i += 1
