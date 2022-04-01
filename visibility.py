@@ -140,7 +140,6 @@ def get_visible_in_poly(vert):
   # colineares à reta que os une.
   # Caso contrário, somente os adjacentes a "vert".
   if (polygon.concavity and vert in polygon.bay):
-    visible = []
     for v in polygon.bay:
       visible.append(v)
     visible.remove(vert)
