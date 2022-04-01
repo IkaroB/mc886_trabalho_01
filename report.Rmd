@@ -45,6 +45,8 @@ aos outros algoritmos, passando por 8 vértices (excluídos inicio e fim), contr
 
 # Código fonte
 
+Link para repositório no Github: [https://github.com/IkaroB/mc886_trabalho_01/](https://github.com/IkaroB/mc886_trabalho_01/).
+
 ### classes.py
 ```{python, message = FALSE, warning = FALSE, python.reticulate = FALSE, eval = FALSE}
 # Este módulo python contém as classes usadas no exercício.
