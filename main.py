@@ -6,8 +6,17 @@ import search_algorithms as search
 import visibility as vis
 
 
+def calc_total_distance(solution):
+  total_distance = 0
+  for i in range(len(solution) - 1):
+    total_distance += vis.line_length(
+        classes.LineSeg(solution[i], solution[i + 1]))
+  return total_distance
+
+
 def print_paths(paths):
   for path in paths:
+    print("\t", end="")
     for vertex in path:
       if vertex != path[-1]:
         print(vertex.name, end=" ")
@@ -15,7 +24,7 @@ def print_paths(paths):
         print(f"{vertex.name}.")
 
 
-def report(solution, paths, print_all, has_cust):
+def report(solution, paths, print_all):
   print(f"Path found: ", end="")
   for vertex in solution:
     if vertex.__class__ == classes.Vertex:
@@ -23,10 +32,10 @@ def report(solution, paths, print_all, has_cust):
         print(vertex.name, end=" ")
       else:
         print(f"{vertex.name}.")
-  if has_cust:
-    if solution[-1].__class__ == classes.Vertex:
-      print(f"Distance: {solution[-1].distance}")
+  if solution[-1].__class__ == classes.Vertex:
+    print(f"Distance: {calc_total_distance(solution)}")
   if print_all:
+    print("All paths:")
     print_paths(paths)
   print()
 
@@ -76,45 +85,45 @@ def main():
       print("Best-First Search")
       bfs_path = search.bfs(problem)
       bfs_all_paths = problem["paths"]
-      report(bfs_path, bfs_all_paths, print_all, True)
+      report(bfs_path, bfs_all_paths, print_all)
     elif algorithm == "ids":
       print("Iterative Deepening Search")
       ids_path = search.ids(problem)
       ids_all_paths = problem["paths"]
-      report(ids_path, ids_all_paths, print_all, False)
+      report(ids_path, ids_all_paths, print_all)
     elif algorithm == "a_star":
       print("A*")
       a_star_path = search.a_star(problem)
       a_star_all_paths = problem["paths"]
-      report(a_star_path, a_star_all_paths, print_all, False)
+      report(a_star_path, a_star_all_paths, print_all)
     elif algorithm == "ida":
       print("IDA*")
       ida_star_path = search.ida_star(problem)
       ida_star_all_paths = problem["paths"]
-      report(ida_star_path, ida_star_all_paths, print_all, True)
+      report(ida_star_path, ida_star_all_paths, print_all)
     elif algorithm == "all":
       # BFS
       print("Best-First Search")
       bfs_path = search.bfs(problem)
       bfs_all_paths = problem["paths"]
-      report(bfs_path, bfs_all_paths, print_all, True)
+      report(bfs_path, bfs_all_paths, print_all)
       problem = pos_solution(problem)
       # IDS
       print("Iterative Deepening Search")
       ids_path = search.ids(problem)
       ids_all_paths = problem["paths"]
-      report(ids_path, ids_all_paths, print_all, False)
+      report(ids_path, ids_all_paths, print_all)
       problem = pos_solution(problem)
       # A*
       print("A*")
       a_star_path = search.a_star(problem)
       a_star_all_paths = problem["paths"]
-      report(a_star_path, a_star_all_paths, print_all, False)
+      report(a_star_path, a_star_all_paths, print_all)
       # IDA*
       print("IDA*")
       ida_star_path = search.ida_star(problem)
       ida_star_all_paths = problem["paths"]
-      report(ida_star_path, ida_star_all_paths, print_all, True)
+      report(ida_star_path, ida_star_all_paths, print_all)
 
 
 main()
